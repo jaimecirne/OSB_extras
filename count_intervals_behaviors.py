@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 """
-StatisticsOSB
+Count Intervals Behaviors
 
 
 """
@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     ulib.create_data_from_raw()
 
-    for f in os.listdir("./data"):
+    for f in os.listdir(ulib.path_data['work']):
         if f.endswith(".csv"):
 
             states = []
@@ -32,7 +32,7 @@ if __name__ == '__main__':
             counter = {}
             open_intervals = {}
             
-            with open("./data/"+f, 'r') as csvfile:
+            with open(ulib.path_data['work']+f, 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
                 for row in spamreader:
                     states.append(row)
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
 
             for c in classStates:
-                with open('./data_processed/intervals/splited/'+c+'_'+f, mode='w', newline='') as csvfile:
+                with open(ulib.path_data['splited']+c+'_'+f, mode='w', newline='') as csvfile:
                     result_file = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     state_interval = state_intervals[c]
                     state_interval_list = [s for s in state_interval.values()]
@@ -67,14 +67,14 @@ if __name__ == '__main__':
     state_intervals = {}
     classStates = []
 
-    for f in os.listdir('./data_processed/intervals/splited/'):
+    for f in os.listdir(ulib.path_data['splited']):
         if f.endswith(".csv"):
             classe = str(f.split('_')[0])
 
             if classe not in classStates:
                     classStates.append(classe)
 
-            with open('./data_processed/intervals/splited/'+f, 'r') as csvfile:
+            with open(ulib.path_data['splited']+f, 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
                 for row in spamreader:
                     if classe in state_intervals:
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     for c in classStates:
         state_interval_list = state_intervals[c]
-        with open('./data_processed/intervals/byclass/all_'+c+'_intervals.csv', mode='w', newline='') as csvfile:
+        with open(ulib.path_data['byclass']+c+'_intervals.csv', mode='w', newline='') as csvfile:
             result_file = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             state_interval_list = state_intervals[c]
             for s in state_interval_list:
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     for c in classStates:
         state_interval = state_intervals[c]
-        with open('./data_processed/'+c+'_.csv', mode='w', newline='') as csvfile:
+        with open(ulib.path_data['processed']+c+'_.csv', mode='w', newline='') as csvfile:
             result_file = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             state_interval_list = state_intervals[c]
             sl = len(state_interval_list)
@@ -141,7 +141,5 @@ if __name__ == '__main__':
             #result_file.writerow([statistics.stdev(state_interval_list)])
             #print("Meam of  is % s "% (statistics.mean(state_interval_list)))
             #print("Standard Deviation of  is % s "% (statistics.stdev(state_interval_list)))
-
-
 
 print("Done")

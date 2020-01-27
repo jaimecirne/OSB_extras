@@ -1,6 +1,16 @@
 import os
 import csv
 
+path_data ={
+    'raw': './raw_data/',
+    'work': './data/',
+    'processed': './processed_data/',
+    'intervals': './processed_data/intervals/',
+    'images':'./data/',
+    'splited':'./processed_data/intervals/splited/',
+    'byclass':'./processed_data/intervals/byclass/',
+}
+
 relabel_states ={
     'Alerta': 'Alert',
     'Ativo': 'Active',
@@ -35,11 +45,11 @@ def str_time_to_int_seconds(time):
     return hour*3600  + minutes*60 + seconds
 
 def create_data_from_raw():
-    for f in os.listdir("./data_raw"):
+    for f in os.listdir(path_data['raw']):
         if f.endswith(".csv"):
             cleaning_states = []
             states_raw = []
-            with open("./data_raw/"+f, 'r') as csvfile:
+            with open(path_data['raw']+f, 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
                 for row in spamreader:
                     if any(row):
@@ -64,7 +74,7 @@ def create_data_from_raw():
                 cleaning_states[i][0] = relabel_states.get(cleaning_states[i][0], cleaning_states[i][0])
 
             # save new csv to work
-            with open('./data/'+f, mode='w', newline='') as csvfile:
+            with open(path_data['work']+f, mode='w', newline='') as csvfile:
                 result_file = csv.writer(csvfile, delimiter=';', quotechar='|')
                 for cs in cleaning_states:
                     result_file.writerow(cs)

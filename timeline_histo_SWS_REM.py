@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 """
-StatisticsOSB
+time line histogram SWS
 
 
 """
@@ -31,12 +31,12 @@ if __name__ == '__main__':
 
     sws_duration = {}
 
-    for f in os.listdir("./data"):
+    for f in os.listdir(ulib.path_data['work']):
         if f.endswith(".csv"):
 
             states = []
             
-            with open("./data/"+f, 'r') as csvfile:
+            with open(ulib.path_data['work']+f, 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
                 for row in spamreader:
                     states.append(row)
@@ -107,12 +107,6 @@ if __name__ == '__main__':
     xticks = np.arange(0,len(rmL),10)
     yticks = np.arange(1,len(rmL)+1)
     yticks1 = np.arange(0,3300,120)
-
-    print('yticks1')
-    print(yticks1)
-
-    print('yticks')
-    print(yticks)
 
     yticksHisto = np.arange(0,100,10)
     sizefone = 18
