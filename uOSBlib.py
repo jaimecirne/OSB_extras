@@ -1,5 +1,6 @@
 import os
 import csv
+import time
 
 path_data ={
     'raw': './raw_data/',
@@ -25,26 +26,39 @@ relabel_states ={
     'REME': 'OEM',
 }
 
-def get_interval_in_seconds(time_s, time_e):
+def get_interval_in_seconds(time_s: str, time_e: str) -> int:
+    "get 2 strings in formmat hh:mm:ss and return the interval between their in seconds(int)"
     return get_duration_in_seconds(time_s, time_e)
 
-def get_duration_in_seconds(time_s, time_e):
+def get_duration_in_seconds(time_s: str, time_e: str) -> int:
+    "get 2 strings in formmat hh:mm:ss and return the duration between their in seconds(int)"
     hour_s = int(time_s.split(':')[0])
     minutes_s = int(time_s.split(':')[1])
     seconds_s = int(time_s.split(':')[2])
     hour_e = int(time_e.split(':')[0])
     minutes_e = int(time_e.split(':')[1])
     seconds_e = int(time_e.split(':')[2])
-
     return (hour_e-hour_s)*3600  + (minutes_e-minutes_s)*60 + seconds_e-seconds_s
 
-def str_time_to_int_seconds(time):
-    hour = int(time.split(':')[0])
-    minutes = int(time.split(':')[1])
-    seconds = int(time.split(':')[2])
-    return hour*3600  + minutes*60 + seconds
+def str_time_to_int_seconds(time_s: str) -> int:
+    """
+    :param time: a str holding time in hh:mm:ss format
+    :returns: valeu in seconds about the string
+    :reises: ErrorStringTimeFormat
+    get a string in fotmmat hh:mm:ss and return value in seconds (int)
+    """
+
+    try:
+        time.strptime(time_s, '%H:%M:%SS')
+        hour = int(time.split(':')[0])
+        minutes = int(time.split(':')[1])
+        seconds = int(time.split(':')[2])
+        return hour*3600  + minutes*60 + seconds
+    except ValueError:
+        raise StringTimeFormatError(f"{time_s} is not in format hh:mm:ss" )
 
 def create_data_from_raw():
+    "get the sheets on the raw data folder, cleaing and fix and create news sheets in data folder"
     for f in os.listdir(path_data['raw']):
         if f.endswith(".csv"):
             cleaning_states = []

@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 """
-StatisticsOSB
-
+[find the interval and duration about SWS and REM related]
 
 """
 # Authors: Jaime Bruno Cirne de Oliveira (jaime@neuro.ufrn.br)
@@ -36,7 +35,6 @@ if __name__ == '__main__':
 
     with open(ulib.path_data['processed']+'sws_before_rem_intervals.csv', mode='w', newline='') as csvfile:
         result_interval_file = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-
 
         result_interval_file.writerow(['SWS-like','REM-like'])
 
@@ -73,7 +71,42 @@ if __name__ == '__main__':
                     sws_last = True
                 elif s[0] == 'REM-like' and sws_last :
                     result_duration_file.writerow([ulib.get_interval_in_seconds(s_t[1],s_t[2]),ulib.get_interval_in_seconds(s[1],s[2])])
-
                 else:
                     sws_last = False
-            
+
+    with open(ulib.path_data['processed']+'all_sws_rem_duration.csv', mode='w', newline='') as csvfile:
+        result_duration_file = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+        s_t = []
+        sws_last = False
+
+        result_duration_file.writerow(['SWS-like','REM-like'])
+
+        for l in states:
+            for s in states[l]:
+
+                if s[0] == 'SWS-like':
+       with open(ulib.path_data['processed']+'all_sws_rem_duration.csv', mode='w', newline='') as csvfile:
+        result_duration_file = csv.writer(csvfile, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+        s_t = []
+        sws_last = False
+
+        result_duration_file.writerow(['SWS-like','REM-like'])
+
+        for l in states:
+            for s in states[l]:
+
+                if s[0] == 'SWS-like':
+                    s_t = s
+                    sws_last = True
+                elif s[0] == 'REM-like' and sws_last :
+                    result_duration_file.writerow([ulib.get_interval_in_seconds(s_t[1],s_t[2]),ulib.get_interval_in_seconds(s[1],s[2])])
+                else:
+                    sws_last = False                 s_t = s
+                    sws_last = True
+                elif s[0] == 'REM-like' and sws_last :
+                    result_duration_file.writerow([ulib.get_interval_in_seconds(s_t[1],s_t[2]),ulib.get_interval_in_seconds(s[1],s[2])])
+                else:
+                    sws_last = False
+
