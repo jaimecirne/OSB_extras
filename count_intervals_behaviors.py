@@ -23,6 +23,8 @@ if __name__ == '__main__':
 
     ulib.create_data_from_raw()
 
+    ulib.print_error_time()
+
     for f in os.listdir(ulib.path_data['work']):
         if f.endswith(".csv"):
 
@@ -35,13 +37,13 @@ if __name__ == '__main__':
             with open(ulib.path_data['work']+f, 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
                 for row in spamreader:
-                    states.append(row)
+                    if any(row):
+                        states.append(row)
 
             for s in states:
                 if s[0] not in open_intervals:
                     counter[s[0]] = 1
                     state_intervals[s[0]] = {}
-
 
                 if s[0] in open_intervals :
                     hour = int(s[1].split(':')[0])
@@ -54,7 +56,6 @@ if __name__ == '__main__':
                 open_intervals[s[0]] = ulib.str_time_to_int_seconds(s[2])
 
                 counter[s[0]] = counter[s[0]]+1
-
 
             for c in classStates:
                 with open(ulib.path_data['splited']+c+'_'+f, mode='w', newline='') as csvfile:

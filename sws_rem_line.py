@@ -34,16 +34,20 @@ if __name__ == '__main__':
                 sws_durations.append(int(row[0]))
                 rem_durations.append(int(row[1]))
 
+    linregress = stats.linregress(sws_durations,rem_durations)
 
     coef = np.polyfit(sws_durations,rem_durations,1)
     poly1d_fn = np.poly1d(coef) 
 
     plt.suptitle("Line Regress SWS-like and REM-like related",fontname='Arial', size=sizefone+2, weight="bold")
-    plt.plot(sws_durations,rem_durations, 'ko', sws_durations, poly1d_fn(sws_durations), '--r')
+    plt.plot(sws_durations,rem_durations, 'ko', sws_durations, poly1d_fn(sws_durations), '--b',alpha=0.8)
     plt.ylabel("Duration of REM-like (seconds)", fontname='Arial',size=sizefone, weight="bold")    
     plt.xlabel("Duration of SWS-like (seconds)", fontname='Arial',size=sizefone, weight="bold")
     plt.xticks( fontname='Arial', size=sizefone-2, weight="bold")
     plt.yticks( fontname='Arial', size=sizefone-2, weight="bold")
-
+    plt.text(0.35, 0.5, 'Close Me!', dict(size=30))
+    #plt.annotate(linregress[], (0,0), (0, -20), xycoords='axes fraction', textcoords='offset points', va='top')
     plt.show()
+
+    print(linregress)
 

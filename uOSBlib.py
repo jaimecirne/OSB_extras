@@ -31,7 +31,16 @@ def get_interval_in_seconds(time_s: str, time_e: str) -> int:
     return get_duration_in_seconds(time_s, time_e)
 
 def get_duration_in_seconds(time_s: str, time_e: str) -> int:
-    "get 2 strings in formmat hh:mm:ss and return the duration between their in seconds(int)"
+    """[get 2 strings in formmat hh:mm:ss and return the duration between their in seconds(int)]
+    
+    Arguments:
+        time_s {str} -- [String 'hh:mm:ss']
+        time_e {str} -- [String 'hh:mm:ss']
+    
+    Returns:
+        int -- [description]
+    """
+    
     hour_s = int(time_s.split(':')[0])
     minutes_s = int(time_s.split(':')[1])
     seconds_s = int(time_s.split(':')[2])
@@ -48,14 +57,31 @@ def str_time_to_int_seconds(time_s: str) -> int:
     get a string in fotmmat hh:mm:ss and return value in seconds (int)
     """
 
-    try:
-        time.strptime(time_s, '%H:%M:%SS')
-        hour = int(time.split(':')[0])
-        minutes = int(time.split(':')[1])
-        seconds = int(time.split(':')[2])
-        return hour*3600  + minutes*60 + seconds
-    except ValueError:
-        raise StringTimeFormatError(f"{time_s} is not in format hh:mm:ss" )
+    hour = int(time_s.split(':')[0])
+    minutes = int(time_s.split(':')[1])
+    seconds = int(time_s.split(':')[2])
+    return hour*3600  + minutes*60 + seconds
+
+def print_error_time():
+    for f in os.listdir(path_data['work']):
+        if f.endswith(".csv"):
+            last_time = []
+            line = 0
+            with open(path_data['work']+f, 'r') as csvfile:
+                spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
+                for row in spamreader:
+                    if any(row):
+                        line = line +1
+                        if last_time  == []:
+                            last_time = row
+                        elif last_time[2] != row[1]:
+                            print(f)
+                            print(str(line))
+                            print(last_time)
+                            print(row)
+
+                        last_time = row
+
 
 def create_data_from_raw():
     "get the sheets on the raw data folder, cleaing and fix and create news sheets in data folder"
