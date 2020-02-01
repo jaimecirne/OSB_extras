@@ -77,9 +77,13 @@ if __name__ == '__main__':
     intervals.insert(0,0)
 
     rmL = []
+    rmL2 = []
 
     for s in sws_duration:
         rmL.extend(sws_duration[s])
+    
+    for s in rem_duration:
+        rmL2.extend(rem_duration[s])
 
     box = [sws_duration[x] for x in sws_duration]
 
@@ -135,6 +139,7 @@ if __name__ == '__main__':
     plt.axvspan(intervals[1] + intervals[2], intervals[1] + intervals[2] + intervals[3], facecolor=color[2], alpha=0.5)
     plt.axvspan(intervals[1] + intervals[2] + intervals[3], len(rmL)+1, facecolor=color[3], alpha=0.5)
     plt.scatter(yticks, rmL,  color='black')
+    plt.scatter(yticks, rmL2,  color='red')
     plt.xticks(xticks, fontname='Arial', size=sizefone-2, weight="bold")
     plt.yticks(yticks1, fontname='Arial', size=sizefone-2, weight="bold")
     plt.ylabel("Duration of SWS-like (seconds)", fontname='Arial',size=sizefone, weight="bold")
