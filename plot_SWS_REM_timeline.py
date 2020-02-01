@@ -24,17 +24,9 @@ import uOSBlib as ulib
 
 all_sws = False
 
-
-if __name__ == '__main__':
+def plot_sws_rem_timeline(files_list):
     
-    ulib.create_data_from_raw()
-
-    sws_duration = {}
-
-    rem_duration = {}
-
-    for f in os.listdir(ulib.path_data['work']):
-        if f.endswith(".csv"):
+    for f in files_list:
 
             states = []
 
@@ -46,10 +38,12 @@ if __name__ == '__main__':
             s_t = []
             sws_last = False
 
-            P = f.split('.')[0]
+            A = f.split('.')[0]
             D = f.split('.')[1]
             M = f.split('.')[2]
             Y = '20'+((f.split('.')[3]).split('-')[0])
+
+            P = A+Y+M+D
 
             for s in states:
                 
@@ -146,3 +140,22 @@ if __name__ == '__main__':
 
     # plt.savefig("test_rasterization.png", dpi=300)
     plt.show()
+
+if __name__ == '__main__':
+    
+    ulib.create_data_from_raw()
+
+    sws_duration = {}
+
+    rem_duration = {}
+
+
+    files_p2 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p2')]
+    files_p3 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p3')]
+    files_p4 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p4')]
+    files_p5 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p5')]
+
+    plot_sws_rem_timeline(files_p2)
+    plot_sws_rem_timeline(files_p3) 
+    plot_sws_rem_timeline(files_p4)
+    plot_sws_rem_timeline(files_p5)
