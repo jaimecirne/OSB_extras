@@ -45,7 +45,7 @@ if __name__ == '__main__':
     plt.xlabel("Duration of SWS-like (seconds)", fontname='Arial',size=sizefone, weight="bold")
     plt.xticks( fontname='Arial', size=sizefone-2, weight="bold")
     plt.yticks( fontname='Arial', size=sizefone-2, weight="bold")
-    plt.text(0.35, 0.5, 'Close Me!', dict(size=30))
+
     #plt.annotate(linregress[], (0,0), (0, -20), xycoords='axes fraction', textcoords='offset points', va='top')
     plt.show()
 

@@ -22,10 +22,15 @@ from scipy.ndimage.filters import gaussian_filter1d
 # micro OSB lib verify if there is a uOSBfile in the same path
 import uOSBlib as ulib
 
-all_sws = False
 
-def plot_sws_rem_timeline(files_list):
+def plot_sws_rem_timeline(files_list, animal):
     
+    sws_duration = {}
+    rem_duration = {}
+
+    sws_start = {}
+    rem_start = {}
+
     for f in files_list:
 
             states = []
@@ -48,21 +53,19 @@ def plot_sws_rem_timeline(files_list):
             for s in states:
                 
                 if s[0] == 'SWS-like':
-                    if all_sws:
-                        if P not in sws_duration:
-                            sws_duration[P] = [ulib.get_duration_in_seconds(s[1], s[2])]
-                        else:
-                            sws_duration[P].append(ulib.get_duration_in_seconds(s[1], s[2]))
-                    else:
-                        s_t = s
-                        sws_last = True
-                elif s[0] == 'REM-like' and sws_last and not all_sws :                
+                    s_t = s
+                    sws_last = True
+                elif s[0] == 'REM-like' and sws_last:
                     if P not in sws_duration:
                         sws_duration[P] = [ulib.get_duration_in_seconds(s_t[1], s_t[2])]
                         rem_duration[P] = [ulib.get_duration_in_seconds(s[1], s[2])]
+                        sws_start[P] = [s_t[1]]
+                        rem_start[P] = [s[1]]
                     else:
                         sws_duration[P].append(ulib.get_duration_in_seconds(s_t[1], s_t[2]))
                         rem_duration[P].append(ulib.get_duration_in_seconds(s[1], s[2]))
+                        sws_start[P].append(s_t[1])
+                        rem_start[P].append(s[1])
                 else:
                     sws_last = False
 
@@ -73,11 +76,23 @@ def plot_sws_rem_timeline(files_list):
     rmL = []
     rmL2 = []
 
+    labels_sws = []
+    labels_rem = []
+
+    labels_sws.insert(0,0)
+    labels_rem.insert(0,0)
+
     for s in sws_duration:
         rmL.extend(sws_duration[s])
-    
+
     for s in rem_duration:
         rmL2.extend(rem_duration[s])
+
+    for s in sws_start:
+        labels_sws.extend(sws_start[s])
+
+    for s in rem_start:
+        labels_rem.extend(rem_start[s])
 
     box = [sws_duration[x] for x in sws_duration]
 
@@ -106,7 +121,7 @@ def plot_sws_rem_timeline(files_list):
     histoxMin = min(histrmL[1])
     histoxMax = max(histrmL[1])
     ylim = [yMin -5, yMax+5]
-    xticks = np.arange(0,len(rmL),10)
+    xticks = np.arange(0,len(rmL)+1,1)
     yticks = np.arange(1,len(rmL)+1)
     yticks1 = np.arange(0,3300,120)
 
@@ -120,10 +135,8 @@ def plot_sws_rem_timeline(files_list):
     plt.subplots_adjust(top=0.88, bottom=0.11, 
         left=0.12, right=0.90, hspace=0.20, wspace=0.20)
 
-    if all_sws:
-        plt.suptitle("Duration of All SWS-like",fontname='Arial', size=sizefone+2, weight="bold")
-    else:
-        plt.suptitle("Duration of SWS-like before a REM-like ",fontname='Arial', size=sizefone+2, weight="bold")
+ 
+    plt.suptitle("Duration of SWS-like before a REM-like of "+animal,fontname='Arial', size=sizefone+2, weight="bold")
     
 #   plt.subplot(2,4,(1,3))
     plt.xlim([0,len(rmL)+1])
@@ -134,7 +147,7 @@ def plot_sws_rem_timeline(files_list):
     plt.axvspan(intervals[1] + intervals[2] + intervals[3], len(rmL)+1, facecolor=color[3], alpha=0.5)
     plt.scatter(yticks, rmL,  color='black')
     plt.scatter(yticks, rmL2,  color='red')
-    plt.xticks(xticks, fontname='Arial', size=sizefone-2, weight="bold")
+    plt.xticks(xticks, labels_rem, fontname='Arial', size=sizefone-2, weight="bold")
     plt.yticks(yticks1, fontname='Arial', size=sizefone-2, weight="bold")
     plt.ylabel("Duration of SWS-like (seconds)", fontname='Arial',size=sizefone, weight="bold")
 
@@ -145,17 +158,12 @@ if __name__ == '__main__':
     
     ulib.create_data_from_raw()
 
-    sws_duration = {}
-
-    rem_duration = {}
-
-
     files_p2 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p2')]
     files_p3 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p3')]
     files_p4 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p4')]
     files_p5 = [ f for f in os.listdir(ulib.path_data['work']) if f.endswith(".csv") and f.startswith('p5')]
 
-    plot_sws_rem_timeline(files_p2)
-    plot_sws_rem_timeline(files_p3) 
-    plot_sws_rem_timeline(files_p4)
-    plot_sws_rem_timeline(files_p5)
+    plot_sws_rem_timeline(files_p2,'Paçoca')
+    plot_sws_rem_timeline(files_p3,'Pipa') 
+    plot_sws_rem_timeline(files_p4,'Marshmallow')
+    plot_sws_rem_timeline(files_p5,'Ary')

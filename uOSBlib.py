@@ -27,7 +27,15 @@ relabel_states ={
 }
 
 def get_interval_in_seconds(time_s: str, time_e: str) -> int:
-    "get 2 strings in formmat hh:mm:ss and return the interval between their in seconds(int)"
+    """[get 2 strings in formmat hh:mm:ss and return the interval between their in seconds(int)]
+    
+    Arguments:
+        time_s {str} -- [String 'hh:mm:ss']
+        time_e {str} -- [String 'hh:mm:ss']
+    
+    Returns:
+        int -- [interval in seconds]
+    """
     return get_duration_in_seconds(time_s, time_e)
 
 def get_duration_in_seconds(time_s: str, time_e: str) -> int:
@@ -38,7 +46,7 @@ def get_duration_in_seconds(time_s: str, time_e: str) -> int:
         time_e {str} -- [String 'hh:mm:ss']
     
     Returns:
-        int -- [description]
+        int -- [duration in seconds]
     """
     
     hour_s = int(time_s.split(':')[0])
@@ -63,6 +71,9 @@ def str_time_to_int_seconds(time_s: str) -> int:
     return hour*3600  + minutes*60 + seconds
 
 def print_error_time():
+    """
+    [check error start ands end between states]
+    """
     for f in os.listdir(path_data['work']):
         if f.endswith(".csv"):
             last_time = []
@@ -84,7 +95,7 @@ def print_error_time():
 
 
 def create_data_from_raw():
-    "get the sheets on the raw data folder, cleaing and fix and create news sheets in data folder"
+    
     for f in os.listdir(path_data['raw']):
         if f.endswith(".csv"):
             cleaning_states = []
