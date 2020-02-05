@@ -25,6 +25,7 @@ if __name__ == '__main__':
     sizefone = 18
 
     ulib.create_data_from_raw()
+    
     sws_durations = []
     rem_durations = []
     with open(ulib.path_data['processed']+'sws_before_rem_duration.csv', 'r') as csvfile:

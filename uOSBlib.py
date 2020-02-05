@@ -97,6 +97,7 @@ def print_error_time():
 def create_data_from_raw():
     
     for f in os.listdir(path_data['raw']):
+        diference_time_between_start = []
         if f.endswith(".csv"):
             cleaning_states = []
             states_raw = []
@@ -119,10 +120,24 @@ def create_data_from_raw():
                     cleaning_states[-1][2] = s[2]
                 else:
                     cleaning_states.append(s)
-            
+
             # change old names states to new names
             for i in range(len(cleaning_states)):
                 cleaning_states[i][0] = relabel_states.get(cleaning_states[i][0], cleaning_states[i][0])
+
+            # standardize start time to 05:50
+            part_file = int(f.split('-')[1].split('.csv')[0])
+
+            if part_file < 2:
+                hora = cleaning_states[0][1].split(':')[0]
+                minutos = cleaning_states[0][1].split(':')[1]
+                segundos = cleaning_states[0][1].split(':')[2]
+                diference_time_between_start = [5-int(hora),50-int(minutos),int(segundos)]
+            
+            for s in cleaning_states:
+
+
+
 
             # save new csv to work
             with open(path_data['work']+f, mode='w', newline='') as csvfile:
