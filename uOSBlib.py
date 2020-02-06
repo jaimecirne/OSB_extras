@@ -1,6 +1,7 @@
 import os
 import csv
 import time
+from datetime import datetime
 
 path_data ={
     'raw': './raw_data/',
@@ -95,9 +96,11 @@ def print_error_time():
 
 
 def create_data_from_raw():
-    
+    tdelta = None
+    less = False
+    s2 = '05:50:00'
+    FMT = '%H:%M:%S'
     for f in os.listdir(path_data['raw']):
-        diference_time_between_start = []
         if f.endswith(".csv"):
             cleaning_states = []
             states_raw = []
@@ -129,15 +132,32 @@ def create_data_from_raw():
             part_file = int(f.split('-')[1].split('.csv')[0])
 
             if part_file < 2:
-                hora = cleaning_states[0][1].split(':')[0]
-                minutos = cleaning_states[0][1].split(':')[1]
-                segundos = cleaning_states[0][1].split(':')[2]
-                diference_time_between_start = [5-int(hora),50-int(minutos),int(segundos)]
+                s1 = cleaning_states[0][1]
+                s1_time = datetime.strptime(s1, FMT)
+                s2_time = datetime.strptime(s2, FMT) 
+                if s1_time <= s2_time:
+                    tdelta = datetime.strptime(s2, FMT) - datetime.strptime(s1, FMT)
+                    less = False
+                else:
+                    tdelta = datetime.strptime(s1, FMT) - datetime.strptime(s2, FMT)
+                    less = True
             
-            for s in cleaning_states:
+            for i in range(len(cleaning_states)):
+                s_time = datetime.strptime(cleaning_states[i][1], FMT)
+                e_time = datetime.strptime(cleaning_states[i][2], FMT)
 
+                if less:
+                    tdelta_s = s_time - tdelta
+                    tdelta_e = e_time - tdelta
 
+                    cleaning_states[i][1] = tdelta_s.strftime(FMT)
+                    cleaning_states[i][2] = tdelta_e.strftime(FMT)
+                else:
+                    tdelta_s = s_time + tdelta
+                    tdelta_e = e_time + tdelta
 
+                    cleaning_states[i][1] = tdelta_s.strftime(FMT)
+                    cleaning_states[i][2] = tdelta_e.strftime(FMT)
 
             # save new csv to work
             with open(path_data['work']+f, mode='w', newline='') as csvfile:
