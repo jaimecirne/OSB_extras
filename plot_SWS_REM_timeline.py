@@ -96,8 +96,6 @@ def plot_sws_rem_timeline(files_list, animal):
 
     box = [sws_duration[x] for x in sws_duration]
 
-#    print(box)
-
     histo, bin_edges = np.histogram(rmL, bins=n_bins)
     aux = gaussian_filter1d(histo, sigma=0.5)
     histrmL = bin_edges, aux

@@ -1,7 +1,7 @@
-1) dividir por dias
+1) dividir por dias ok
 2) eixo x proporcional ao tempo com labels do intervalo de hora
-3) cor por polvo
-5) padronizar a hora das planilhas começando de 05:50
+3) cor por polvo ok
+5) padronizar a hora das planilhas começando de 05:50 ok
 6) eixo y em minutos
 7) todos os sws
 

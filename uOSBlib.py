@@ -8,7 +8,7 @@ path_data ={
     'work': './data/',
     'processed': './processed_data/',
     'intervals': './processed_data/intervals/',
-    'images':'./data/',
+    'img':'./images/',
     'splited':'./processed_data/intervals/splited/',
     'byclass':'./processed_data/intervals/byclass/',
 }
@@ -71,6 +71,10 @@ def str_time_to_int_seconds(time_s: str) -> int:
     seconds = int(time_s.split(':')[2])
     return hour*3600  + minutes*60 + seconds
 
+def init_data():
+    create_data_from_raw()
+    print_error_time()
+
 def print_error_time():
     """
     [check error start ands end between states]
@@ -96,6 +100,9 @@ def print_error_time():
 
 
 def create_data_from_raw():
+    """
+    [Clean, relable states, standardize the sheets in the raw data and copy to the work data ]
+    """
     tdelta = None
     less = False
     s2 = '05:50:00'
