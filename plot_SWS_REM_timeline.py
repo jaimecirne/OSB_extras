@@ -74,7 +74,12 @@ def plot_sws_rem_timeline(files_list, animal):
     intervals.insert(0,0)
 
     rmL = []
+    rmLx = []
     rmL2 = []
+    rmL2x = []
+
+    aux_sws = []
+    aux_rem = []
 
     labels_sws = []
     labels_rem = []
@@ -84,9 +89,26 @@ def plot_sws_rem_timeline(files_list, animal):
 
     for s in sws_duration:
         rmL.extend(sws_duration[s])
+        aux_sws.extend(sws_start[s])
 
     for s in rem_duration:
         rmL2.extend(rem_duration[s])
+        aux_rem.extend(rem_start[s])
+
+    for i in range(len(aux_sws)):
+        h_sws = aux_sws[i].split(':')[0]
+        m_sws = aux_sws[i].split(':')[1]
+        rmLx.append(float(h_sws+'.'+m_sws))
+    
+    for i in range(len(aux_rem)):
+        h_rem = aux_rem[i].split(':')[0]
+        m_rem = aux_rem[i].split(':')[1]
+        rmL2x.append(float(h_rem+'.'+m_rem))
+
+
+    print(rmL)
+    print(rmLx)
+    print(sws_start)
 
     for s in sws_start:
         labels_sws.extend(sws_start[s])
@@ -111,16 +133,18 @@ def plot_sws_rem_timeline(files_list, animal):
     print('bin_edges')
     print(bin_edges)
 
-
     # # ==========================================================================================
     # #                   	Graph
     yMin = min(rmL)
     yMax = max(rmL)
+    xMin = min(rmLx)
+    xMax = max(rmLx)
     histoyMin = min(histrmL[0])
     histoyMax = max(histrmL[0])
     histoxMin = min(histrmL[1])
     histoxMax = max(histrmL[1])
     ylim = [yMin -5, yMax+5]
+    xlim = [xMin -5, xMax+5]
     xticks = np.arange(0,len(rmL)+1,1)
     yticks = np.arange(1,len(rmL)+1)
     yticks1 = np.arange(0,3300,120)
@@ -139,14 +163,14 @@ def plot_sws_rem_timeline(files_list, animal):
     plt.suptitle("Duration of SWS-like before a REM-like of "+animal,fontname='Arial', size=sizefone+2, weight="bold")
     
 #   plt.subplot(2,4,(1,3))
-    plt.xlim([0,len(rmL)+1])
+    plt.xlim(xlim)
     plt.ylim(ylim)
     plt.axvspan(intervals[0], intervals[1], facecolor=color[0], alpha=0.5)
     plt.axvspan(intervals[1], intervals[1] + intervals[2], facecolor=color[1], alpha=0.5)
     plt.axvspan(intervals[1] + intervals[2], intervals[1] + intervals[2] + intervals[3], facecolor=color[2], alpha=0.5)
     plt.axvspan(intervals[1] + intervals[2] + intervals[3], len(rmL)+1, facecolor=color[3], alpha=0.5)
-    plt.scatter(yticks, rmL,  color='black')
-    plt.scatter(yticks, rmL2,  color='red')
+    plt.scatter(rmLx, rmL,  color='black')
+    plt.scatter(rmLx, rmL2,  color='red')
     plt.xticks(xticks, labels_rem, fontname='Arial', size=sizefone-2, weight="bold")
     plt.yticks(yticks1, fontname='Arial', size=sizefone-2, weight="bold")
     plt.ylabel("Duration of SWS-like (seconds)", fontname='Arial',size=sizefone, weight="bold")
