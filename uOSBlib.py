@@ -1,10 +1,14 @@
 import os
 import csv
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 path_data ={
     'raw': './raw_data/',
+    'raw_all': './raw_data/all',
+    'raw_part': './raw_data/withoutfeeding',
+    'work_all': './data/all',
+    'work_part': './data/withoutfeeding',
     'work': './data/',
     'processed': './processed_data/',
     'intervals': './processed_data/intervals/',
@@ -22,6 +26,8 @@ relabel_states ={
     'QMMD': 'QHH',
     'QMME': 'QHH',
     'QPC': 'SWS-like',
+    'QPCMORE': 'Long SWS-like',
+    'QPCLESS': 'Short SWS-like',
     'REM': 'REM-like',
     'REMD': 'OEM',
     'REME': 'OEM',
@@ -105,13 +111,13 @@ def create_data_from_raw():
     """
     tdelta = None
     less = False
-    s2 = '05:50:00'
+    start_time = '05:50:00'
     FMT = '%H:%M:%S'
-    for f in os.listdir(path_data['raw']):
+    for f in os.listdir(path_data['raw_all']):
         if f.endswith(".csv"):
             cleaning_states = []
             states_raw = []
-            with open(path_data['raw']+f, 'r') as csvfile:
+            with open(path_data['raw_all']+f, 'r') as csvfile:
                 spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
                 for row in spamreader:
                     if any(row):
@@ -133,7 +139,22 @@ def create_data_from_raw():
 
             # change old names states to new names
             for i in range(len(cleaning_states)):
-                cleaning_states[i][0] = relabel_states.get(cleaning_states[i][0], cleaning_states[i][0])
+                if cleaning_states[i][0] == 'QPC':
+                    s1 = cleaning_states[i][1]
+                    s2 = cleaning_states[i][2]
+                    s1_time = datetime.strptime(s1, FMT)
+                    s1_time = datetime.strptime(s1, FMT)
+                    
+                    tdelta = datetime.strptime(s2, FMT) - datetime.strptime(s1, FMT)
+                    #
+                    limit_deltatime = timedelta(minutes=6,seconds=51/60)
+
+                    if tdelta < limit_deltatime:
+                        cleaning_states[i][0] = relabel_states.get('QPCLESS', cleaning_states[i][0])
+                    else:
+                        cleaning_states[i][0] = relabel_states.get('QPCMORE', cleaning_states[i][0])
+                else:
+                    cleaning_states[i][0] = relabel_states.get(cleaning_states[i][0], cleaning_states[i][0])
 
             # standardize start time to 05:50
             part_file = int(f.split('-')[1].split('.csv')[0])
@@ -141,12 +162,12 @@ def create_data_from_raw():
             if part_file < 2:
                 s1 = cleaning_states[0][1]
                 s1_time = datetime.strptime(s1, FMT)
-                s2_time = datetime.strptime(s2, FMT) 
+                s2_time = datetime.strptime(start_time, FMT) 
                 if s1_time <= s2_time:
-                    tdelta = datetime.strptime(s2, FMT) - datetime.strptime(s1, FMT)
+                    tdelta = datetime.strptime(start_time, FMT) - datetime.strptime(s1, FMT)
                     less = False
                 else:
-                    tdelta = datetime.strptime(s1, FMT) - datetime.strptime(s2, FMT)
+                    tdelta = datetime.strptime(s1, FMT) - datetime.strptime(start_time, FMT)
                     less = True
             
             for i in range(len(cleaning_states)):
@@ -167,7 +188,86 @@ def create_data_from_raw():
                     cleaning_states[i][2] = tdelta_e.strftime(FMT)
 
             # save new csv to work
-            with open(path_data['work']+f, mode='w', newline='') as csvfile:
+            with open(path_data['work_all']+f, mode='w', newline='') as csvfile:
+                result_file = csv.writer(csvfile, delimiter=';', quotechar='|')
+                for cs in cleaning_states:
+                    result_file.writerow(cs)
+    
+    for f in os.listdir(path_data['raw_part']):
+        if f.endswith(".csv"):
+            cleaning_states = []
+            states_raw = []
+            with open(path_data['raw_part']+f, 'r') as csvfile:
+                spamreader = csv.reader(csvfile, delimiter=';', quotechar='|')
+                for row in spamreader:
+                    if any(row):
+                        states_raw.append(row)
+
+            #cleaning empty and duration columns
+            for i, r in enumerate(states_raw):
+                r = list(filter(lambda a: a != '', r))
+                if len(r) > 3:
+                    r.pop(1)
+                states_raw[i] = r
+
+            # removing consecutive equals states
+            for s in states_raw:
+                if len(cleaning_states) > 0 and s[0] == cleaning_states[-1][0]:
+                    cleaning_states[-1][2] = s[2]
+                else:
+                    cleaning_states.append(s)
+
+            # change old names states to new names
+            for i in range(len(cleaning_states)):
+                if cleaning_states[i][0] == 'QPC':
+                    s1 = cleaning_states[i][1]
+                    s2 = cleaning_states[i][2]
+                    s1_time = datetime.strptime(s1, FMT)
+                    s1_time = datetime.strptime(s1, FMT)
+                    
+                    tdelta = datetime.strptime(s2, FMT) - datetime.strptime(s1, FMT)
+                    limit_deltatime = timedelta(minutes=6,seconds=51/60)
+
+                    if tdelta < limit_deltatime:
+                        cleaning_states[i][0] = relabel_states.get('QPCLESS', cleaning_states[i][0])
+                    else:
+                        cleaning_states[i][0] = relabel_states.get('QPCMORE', cleaning_states[i][0])
+                else:
+                    cleaning_states[i][0] = relabel_states.get(cleaning_states[i][0], cleaning_states[i][0])
+
+            # standardize start time to 05:50
+            part_file = int(f.split('-')[1].split('.csv')[0])
+
+            if part_file < 2:
+                s1 = cleaning_states[0][1]
+                s1_time = datetime.strptime(s1, FMT)
+                s2_time = datetime.strptime(start_time, FMT) 
+                if s1_time <= s2_time:
+                    tdelta = datetime.strptime(start_time, FMT) - datetime.strptime(s1, FMT)
+                    less = False
+                else:
+                    tdelta = datetime.strptime(s1, FMT) - datetime.strptime(start_time, FMT)
+                    less = True
+            
+            for i in range(len(cleaning_states)):
+                s_time = datetime.strptime(cleaning_states[i][1], FMT)
+                e_time = datetime.strptime(cleaning_states[i][2], FMT)
+
+                if less:
+                    tdelta_s = s_time - tdelta
+                    tdelta_e = e_time - tdelta
+
+                    cleaning_states[i][1] = tdelta_s.strftime(FMT)
+                    cleaning_states[i][2] = tdelta_e.strftime(FMT)
+                else:
+                    tdelta_s = s_time + tdelta
+                    tdelta_e = e_time + tdelta
+
+                    cleaning_states[i][1] = tdelta_s.strftime(FMT)
+                    cleaning_states[i][2] = tdelta_e.strftime(FMT)
+
+            # save new csv to work
+            with open(path_data['work_part']+f, mode='w', newline='') as csvfile:
                 result_file = csv.writer(csvfile, delimiter=';', quotechar='|')
                 for cs in cleaning_states:
                     result_file.writerow(cs)
